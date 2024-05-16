@@ -1,0 +1,63 @@
+.App {
+  text-align: center;
+}
+
+.App-header {
+  background-color: #333;
+  color: white;
+  padding: 20px;
+}
+
+.App-container {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  margin-top: 20px;
+}
+
+.App-sidebar {
+  background-color: #f4f4f4;
+  width: 200px;
+  padding: 20px;
+}
+
+.App-content {
+  position: relative;
+}
+
+.content-textarea {
+  width: 60%;
+  height: 400px;
+  padding: 10px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  resize: none;
+  margin-bottom: 20px;
+}
+
+.table-generator {
+  text-align: center;
+}
+
+.table-generator label, .table-generator select, .table-generator button {
+  margin: 5px;
+}
+
+.table-container {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.table-container table {
+  border-collapse: collapse;
+  border: 2px solid #ccc;
+}
+
+.table-container td {
+  padding: 10px;
+  border: 1px solid black;
+}
+

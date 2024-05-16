@@ -1,0 +1,15 @@
+td{
+    height: 40px;
+    min-width: 40px;
+    border: 1px solid black;
+}
+table{
+    border-collapse: collapse;
+
+}
+.active-cell{
+    /* background-color: grey; */
+}
+.selected{
+    background-color: rgb(0, 187, 255);
+}
