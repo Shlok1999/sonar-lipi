@@ -1,3 +1,15 @@
+.taal-table-component{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-around;
+}
+
+.table{
+    width: 90%;
+    max-width: 600px;
+}
+
 td{
     height: 40px;
     min-width: 40px;
@@ -10,6 +22,23 @@ table{
 .active-cell{
     /* background-color: grey; */
 }
-.selected{
-    background-color: rgb(0, 187, 255);
+.selected-cell{
+    background-color: rgba(0, 187, 255, 0.705);
+}
+
+.add-row{
+
+}
+
+.keyboard{
+    width: 40%;
+    display: flex;
+    flex-wrap: wrap;
+
+}
+.keyboard button{
+    min-width: 60px;
+    height: 60px;
+    background-color: brown;
+    color: white;
 }

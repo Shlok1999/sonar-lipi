@@ -1,115 +1,59 @@
-import React, { useState, useEffect } from 'react'
-import '../Styles/TaalTable.css'
+import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
+import jsPDF from 'jspdf';
+import html2canvas from 'html2canvas';
 
-function TaalTable({noOfCols, bol=[]}) {
-    const [heading, setHeading] = useState('Untitle')
-    const [table, setTable] = useState([Array(noOfCols).fill('')])
-    const [selectedCell, setSelectedCell] = useState({rowIndex:0, colIndex: 0});
-    const {filename} = useParams()
+import '../Styles/TaalTable.css';
+
+function TaalTable({ noOfCols, bol = [], initialData = [], title }) {
+    const [description, setDescription] = useState("");
+    const { filename } = useParams()
+    console.log(filename)
+    console.log(title)
+    const [table, setTable] = useState(() => {
+        // Retrieve table data from localStorage based on the file's title
+        const savedTable = localStorage.getItem(`tableData_${filename}`);
+        return savedTable ? JSON.parse(savedTable) : (initialData.length > 0 ? initialData : [Array(noOfCols).fill('')]);
+    });
+    const [selectedCell, setSelectedCell] = useState(null);
 
     useEffect(() => {
-        const savedData = JSON.parse(localStorage.getItem(filename));
-        if (savedData) {
-            setTable(savedData.table);
-            setHeading(savedData.heading);
-        }
-    }, [filename]);
+        // Save table data to localStorage based on the file's title whenever it changes
+        localStorage.setItem(`tableData_${filename}`, JSON.stringify(table));
+    }, [table, filename]);
 
-    useEffect(() => {
-        localStorage.setItem(filename, JSON.stringify({ table, heading }));
-    }, [table, heading, filename]);
-
-    // ... (other functions remain the same)
-
-    const handleHeadingChange = (e) => {
-        setHeading(e.target.value);
+    const handleCellClick = (rowIndex, colIndex) => {
+        setSelectedCell({ rowIndex, colIndex });
     };
 
-    useEffect(() => {
-        const handleKeyDown = (event) => {
-            const { rowIndex, colIndex } = selectedCell;
-            switch (event.key) {
-                case 'ArrowUp':
-                    if (rowIndex > 0) {
-                        setSelectedCell({ rowIndex: rowIndex - 1, colIndex });
-                    }
-                    break;
-                case 'ArrowDown':
-                    if (rowIndex < table.length - 1) {
-                        setSelectedCell({ rowIndex: rowIndex + 1, colIndex });
-                    }
-                    break;
-                case 'ArrowLeft':
-                    if (colIndex > 0) {
-                        setSelectedCell({ rowIndex, colIndex: colIndex - 1 });
-                    }
-                    break;
-                case 'ArrowRight':
-                    if (colIndex < noOfCols - 1) {
-                        setSelectedCell({ rowIndex, colIndex: colIndex + 1 });
-                    }
-                    break;
-                default:
-                    break;
-            }
-        };
-
-        window.addEventListener('keydown', handleKeyDown);
-        return () => {
-            window.removeEventListener('keydown', handleKeyDown);
-        };
-    }, [selectedCell, table, noOfCols]);
-
-    useEffect(() => {
-        const savedData = JSON.parse(localStorage.getItem(filename));
-        if (savedData) {
-            setTable(savedData.table);
-            setHeading(savedData.heading);
-        }
-    }, [filename]);
-
-    useEffect(() => {
-        localStorage.setItem(filename, JSON.stringify({ table, heading }));
-    }, [table, heading, filename]);
-    
-
-    const handleCellClick =(rowIndex, colIndex)=>{
-        setSelectedCell({rowIndex, colIndex})
-        console.log({rowIndex, colIndex})
-    }
-
-    const handleCellChange =(rowIndex, colIndex, value)=>{
+    const handleCellChange = (rowIndex, colIndex, value) => {
         const newData = [...table];
         newData[rowIndex][colIndex] = value;
         setTable(newData);
-    }
+    };
 
-    const handleAddRow = ()=>{
-        const newRow = Array(noOfCols).fill('')
-        setTable(previousTable=>[...previousTable, newRow])
-    }
+    const handleAddRow = () => {
+        const newRow = Array(noOfCols).fill('');
+        setTable(previousTable => [...previousTable, newRow]);
+    };
 
-    const handleKeyboardInput =(value)=>{
+    const handleKeyboardInput = (value) => {
         if (selectedCell !== null) {
             const { rowIndex, colIndex } = selectedCell;
             const currentValue = table[rowIndex][colIndex];
             if (value === 'Backspace') {
-                // Remove last character from cell value
                 handleCellChange(rowIndex, colIndex, currentValue.slice(0, -1));
             } else {
                 handleCellChange(rowIndex, colIndex, currentValue + value);
             }
-            console.log(value)
-            
         }
-    }
+    };
 
-    const VirtualKeyboard = ()=>{
+    const VirtualKeyboard = () => {
         const keyboardElements = [
             "सा.", "रे.", "ग.", "म.", "प.", "ध.", "नि.", "सा*",
-            "सा", "रे", "ग", "म", "प", "ध", "नि","सा*",
-            "रे*", "ग*", "म*", "प*", "ध*", "नि*","-", "Backspace"
+            "सा", "रे", "ग", "म", "प", "ध", "नि", "सा*",
+            "रे*", "ग*", "म*", "प*", "ध*", "नि*", "-", "Backspace"
         ];
 
         return (
@@ -121,55 +65,67 @@ function TaalTable({noOfCols, bol=[]}) {
                 ))}
             </div>
         );
-    }
+    };
 
-  return (
+    const handleDownloadPDF = () => {
+        const tableElement = document.querySelector('.table');
+
+    // Use html2canvas to capture the table as an image
+    html2canvas(tableElement).then(canvas => {
+        const imgData = canvas.toDataURL('image/png');
+        
+        // Initialize jsPDF
+        const pdf = new jsPDF('p', 'mm', 'a4');
+        
+        // Add the image of the table to the PDF
+        pdf.addImage(imgData, 'PNG', 0, 0);
+        
+        // Download the PDF
+        pdf.save(`${filename}.pdf`);
+    });
+};
+
+return (
     <div className='taal-table-component'>
+        <div>{filename}</div>
+        <div>{description}</div>
         <table className='table'>
             <thead>
                 <tr className='table-head'>
-                    {
-                        Array.from({length: noOfCols}, (_,index)=>(
-                            <td key={index}>
-                                {index+1}
-                            </td>
-                        ))
-                    }
+                    {Array.from({ length: noOfCols }, (_, index) => (
+                        <td key={index}>
+                            {index + 1}
+                        </td>
+                    ))}
                 </tr>
                 <tr className='table-head'>
-                    {
-                       bol.map((bolElement, index)=>(
+                    {bol.map((bolElement, index) => (
                         <td key={index}>{bolElement}</td>
-                       ))
-                    }
+                    ))}
                 </tr>
             </thead>
             <tbody>
-                {
-                    table.map((row, rowIndex)=>(
-                        <tr key={rowIndex}>
-                            {
-                                row.map((cell, colIndex)=>(
-                                    <td
-                                    key={colIndex}
-                                    onClick={() => handleCellClick(rowIndex, colIndex)}
-                                    className={selectedCell && selectedCell.rowIndex === rowIndex && selectedCell.colIndex === colIndex ? 'selected' : ''}
-                                >
-                                    {cell}
-                                </td>
-                                ))
-                            }
-                        </tr>
-                    ))
-                }
+                {table.map((row, rowIndex) => (
+                    <tr key={rowIndex}>
+                        {row.map((cell, colIndex) => (
+                            <td
+                                onClick={() => handleCellClick(rowIndex, colIndex)}
+                                key={colIndex}
+                                className={selectedCell?.rowIndex === rowIndex && selectedCell?.colIndex === colIndex ? 'selected-cell' : ''}
+                            >
+                                {cell}
+                            </td>
+                        ))}
+                    </tr>
+                ))}
             </tbody>
         </table>
-
         <button className='add-row' onClick={handleAddRow}>Add Row</button>
-        <VirtualKeyboard/>
+        <button onClick={handleDownloadPDF}>Download as PDF</button>
+
+        <VirtualKeyboard />
     </div>
-  )
+);
 }
 
-
-export default TaalTable
+export default TaalTable;

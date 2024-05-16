@@ -9,6 +9,8 @@ import Test from './Pages/Test';
 import TaalTable from './Components/TaalTable';
 
 function App() {
+  const [title, setTitle] = useState('');
+    const [description, setDescription] = useState('');
   return (
     <div className="App">
         <Navbar/>
@@ -16,7 +18,7 @@ function App() {
           <Routes>
             <Route path='/' element={<Homepage/>}/>
             <Route path='/dashboard' element={<Dashboard/>}/>
-            <Route path='/taal/:taal' element={<Filepage/>}/>
+            {/* <Route path='/taal/:taal' element={<Filepage/>}/> */}
             <Route path='/taal-table/:taal/:filename' element={<Filepage/>}/>
             <Route path='/test/' element={<Test/>}/>
           </Routes>
