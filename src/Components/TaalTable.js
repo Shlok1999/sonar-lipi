@@ -1,26 +1,48 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useParams } from 'react-router-dom';
-import jsPDF from 'jspdf';
-import html2canvas from 'html2canvas';
-
 import '../Styles/TaalTable.css';
 
-function TaalTable({ noOfCols, bol = [], initialData = [], title }) {
+function TaalTable({ noOfCols, bol = [], initialData = [] }) {
+    const { filename } = useParams();
     const [description, setDescription] = useState("");
-    const { filename } = useParams()
-    console.log(filename)
-    console.log(title)
-    const [table, setTable] = useState(() => {
-        // Retrieve table data from localStorage based on the file's title
-        const savedTable = localStorage.getItem(`tableData_${filename}`);
-        return savedTable ? JSON.parse(savedTable) : (initialData.length > 0 ? initialData : [Array(noOfCols).fill('')]);
-    });
+    const [table, setTable] = useState(initialData.length > 0 ? initialData : [Array(noOfCols).fill('')]);
     const [selectedCell, setSelectedCell] = useState(null);
 
+    // Fetch data from server on component mount
     useEffect(() => {
-        // Save table data to localStorage based on the file's title whenever it changes
-        localStorage.setItem(`tableData_${filename}`, JSON.stringify(table));
-    }, [table, filename]);
+        fetch(`http://localhost:5000/files/${filename}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.tableData) {
+                    setTable(JSON.parse(data.tableData));
+                    setDescription(data.description);
+                }
+            })
+            .catch(error => {
+                console.error('Error fetching the table data!', error);
+            });
+    }, [filename]);
+
+    // Debounced function to save data to the server
+    const saveData = useCallback(() => {
+        fetch(`http://localhost:5000/files/${filename}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ description, tableData: table })
+        })
+            .then(response => response.json())
+            .catch(error => {
+                console.error('Error updating the table data!', error);
+            });
+    }, [description, table, filename]);
+
+    // Debounce saveData to prevent excessive server updates
+    useEffect(() => {
+        const timer = setTimeout(saveData, 500); // Adjust debounce delay as needed
+        return () => clearTimeout(timer);
+    }, [table, description, saveData]);
 
     const handleCellClick = (rowIndex, colIndex) => {
         setSelectedCell({ rowIndex, colIndex });
@@ -41,7 +63,7 @@ function TaalTable({ noOfCols, bol = [], initialData = [], title }) {
         if (selectedCell !== null) {
             const { rowIndex, colIndex } = selectedCell;
             const currentValue = table[rowIndex][colIndex];
-            if (value === 'Backspace') {
+            if (value === 'X') {
                 handleCellChange(rowIndex, colIndex, currentValue.slice(0, -1));
             } else {
                 handleCellChange(rowIndex, colIndex, currentValue + value);
@@ -53,7 +75,7 @@ function TaalTable({ noOfCols, bol = [], initialData = [], title }) {
         const keyboardElements = [
             "सा.", "रे.", "ग.", "म.", "प.", "ध.", "नि.", "सा*",
             "सा", "रे", "ग", "म", "प", "ध", "नि", "सा*",
-            "रे*", "ग*", "म*", "प*", "ध*", "नि*", "-", "Backspace"
+            "रे*", "ग*", "म*", "प*", "ध*", "नि*", "-", "X"
         ];
 
         return (
@@ -67,65 +89,45 @@ function TaalTable({ noOfCols, bol = [], initialData = [], title }) {
         );
     };
 
-    const handleDownloadPDF = () => {
-        const tableElement = document.querySelector('.table');
-
-    // Use html2canvas to capture the table as an image
-    html2canvas(tableElement).then(canvas => {
-        const imgData = canvas.toDataURL('image/png');
-        
-        // Initialize jsPDF
-        const pdf = new jsPDF('p', 'mm', 'a4');
-        
-        // Add the image of the table to the PDF
-        pdf.addImage(imgData, 'PNG', 0, 0);
-        
-        // Download the PDF
-        pdf.save(`${filename}.pdf`);
-    });
-};
-
-return (
-    <div className='taal-table-component'>
-        <div>{filename}</div>
-        <div>{description}</div>
-        <table className='table'>
-            <thead>
-                <tr className='table-head'>
-                    {Array.from({ length: noOfCols }, (_, index) => (
-                        <td key={index}>
-                            {index + 1}
-                        </td>
-                    ))}
-                </tr>
-                <tr className='table-head'>
-                    {bol.map((bolElement, index) => (
-                        <td key={index}>{bolElement}</td>
-                    ))}
-                </tr>
-            </thead>
-            <tbody>
-                {table.map((row, rowIndex) => (
-                    <tr key={rowIndex}>
-                        {row.map((cell, colIndex) => (
-                            <td
-                                onClick={() => handleCellClick(rowIndex, colIndex)}
-                                key={colIndex}
-                                className={selectedCell?.rowIndex === rowIndex && selectedCell?.colIndex === colIndex ? 'selected-cell' : ''}
-                            >
-                                {cell}
+    return (
+        <div className='taal-table-component'>
+            <div><h2>{filename}</h2></div>
+            <div>{description}</div>
+            <table className='table'>
+                <thead>
+                    <tr className='table-head'>
+                        {Array.from({ length: noOfCols }, (_, index) => (
+                            <td key={index}>
+                                {index + 1}
                             </td>
                         ))}
                     </tr>
-                ))}
-            </tbody>
-        </table>
-        <button className='add-row' onClick={handleAddRow}>Add Row</button>
-        <button onClick={handleDownloadPDF}>Download as PDF</button>
-
-        <VirtualKeyboard />
-    </div>
-);
+                    <tr className='table-head'>
+                        {bol.map((bolElement, index) => (
+                            <td key={index}>{bolElement}</td>
+                        ))}
+                    </tr>
+                </thead>
+                <tbody>
+                    {table.map((row, rowIndex) => (
+                        <tr key={rowIndex}>
+                            {row.map((cell, colIndex) => (
+                                <td
+                                    onClick={() => handleCellClick(rowIndex, colIndex)}
+                                    key={colIndex}
+                                    className={selectedCell?.rowIndex === rowIndex && selectedCell?.colIndex === colIndex ? 'selected-cell' : ''}
+                                >
+                                    {cell}
+                                </td>
+                            ))}
+                        </tr>
+                    ))}
+                </tbody>
+            </table>
+            <button className='add-row' onClick={handleAddRow}>Add Row</button>
+            <VirtualKeyboard />
+        </div>
+    );
 }
 
 export default TaalTable;

@@ -5,22 +5,22 @@ import Filepage from './Pages/Filepage';
 import Navbar from './Components/Navbar';
 import Homepage from './Pages/Homepage';
 import Dashboard from './Pages/Dashboard';
-import Test from './Pages/Test';
-import TaalTable from './Components/TaalTable';
+import Register from './Pages/Register';
+import Login from './Pages/Login';
 
 function App() {
-  const [title, setTitle] = useState('');
-    const [description, setDescription] = useState('');
+
   return (
     <div className="App">
         <Navbar/>
         <Router>
           <Routes>
             <Route path='/' element={<Homepage/>}/>
+            <Route path='/register' element={<Register/>}/>
+            <Route path='/login' element={<Login/>}/>
             <Route path='/dashboard' element={<Dashboard/>}/>
-            {/* <Route path='/taal/:taal' element={<Filepage/>}/> */}
             <Route path='/taal-table/:taal/:filename' element={<Filepage/>}/>
-            <Route path='/test/' element={<Test/>}/>
+            {/* <Route path='/test/' element={<Test/>}/> */}
           </Routes>
         </Router>
     </div>

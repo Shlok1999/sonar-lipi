@@ -16,6 +16,13 @@ function Homepage() {
         <span style={{color: 'green'}}>A</span>
         <span>R</span></h1> <h1 className='lipi' style={{ color: 'brown' }}>-लिपि</h1>
       </div>
+
+      <section className="about-section">
+          <p>
+            With Our Application you will be able to create your own classical composition <br />
+            in rythmic cycle choice(taal) of your own
+          </p>
+      </section>
     </section>
   )
 }

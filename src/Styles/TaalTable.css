@@ -6,6 +6,7 @@
 }
 
 .table{
+    margin-top: 3rem;
     width: 90%;
     max-width: 600px;
 }
@@ -27,17 +28,18 @@ table{
 }
 
 .add-row{
-
+    margin: 3rem;
 }
 
 .keyboard{
-    width: 40%;
+    width: 50%;
     display: flex;
     flex-wrap: wrap;
 
 }
 .keyboard button{
-    min-width: 60px;
+    width: 60px;
+    padding: 1rem;
     height: 60px;
     background-color: brown;
     color: white;

@@ -1,5 +1,4 @@
 .dashboard-section{
-    background-color: rgba(128, 128, 128, 0.564);
     display: flex;
     flex-direction: column;
     padding: 1rem;
@@ -13,6 +12,13 @@
 }
 .new-doc-section{
     width: 100%;
+    background-color: rgba(128, 128, 128, 0.184);
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: space-around;
+
 }
 .new-doc-container{
     width: 100%;
@@ -21,19 +27,64 @@
     justify-content: space-around;
     flex-wrap: wrap;
     gap: 40px;
-    margin-top:2rem;
 }
 .card{
     width: 118px;
     height: 152px;
     background-color: white;
-    padding: 1rem;
-}
-.my-dashboard{
-    margin-top: 3rem;
-    background-color: aqua;
-    width: 100%;
     display: flex;
     align-items: center;
     justify-content: space-around;
+    
+}
+.new-file-icon{
+    border: 1px solid black;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    cursor: pointer;
+}
+
+/* My Dashboard */
+.my-dashboard{
+    margin-top: 3rem;
+    background-color: rgba(160, 238, 238, 0.115);
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: space-around;
+    text-align: left;
+}
+
+.files-container{
+    margin: 4rem;
+}
+.new-file-popup{
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-around;
+    background-color: rgb(255, 255, 255);
+    padding: 5rem;
+    border-radius: 10px;
+    gap: 1rem;
+    width: 300px;
+    height: 400px;
+}
+.form{
+    width: 80%;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 30px;
+}
+.new-file-popup input, textarea{
+    height: 30px;
+    width: 300px;
+    border-radius: 10px;
 }

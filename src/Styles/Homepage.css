@@ -7,13 +7,14 @@ section{
 .homepage-container{
     display: flex;
     align-items: center;
+    margin-top: 3rem;
 }
 .homepage-container h1{
     font-size: 35px;
 }
 .hero-section{
     display: flex;
-    position: absolute;
+    /* position: absolute; */
     top: 35%;
 }
 .hero-section h1{
