@@ -37,6 +37,47 @@ function TaalTable({ noOfCols, bol = [], initialData = [] }) {
                 console.error('Error updating the table data!', error);
             });
     }, [description, table, filename]);
+    useEffect(() => {
+        const handleKeyDown = (event) => {
+            if (selectedCell !== null) {
+                const { rowIndex, colIndex } = selectedCell;
+                switch (event.key) {
+                    case 'ArrowUp':
+                        setSelectedCell({
+                            rowIndex: Math.max(rowIndex - 1, 0),
+                            colIndex
+                        });
+                        break;
+                    case 'ArrowDown':
+                        setSelectedCell({
+                            rowIndex: Math.min(rowIndex + 1, table.length - 1),
+                            colIndex
+                        });
+                        break;
+                    case 'ArrowLeft':
+                        setSelectedCell({
+                            rowIndex,
+                            colIndex: Math.max(colIndex - 1, 0)
+                        });
+                        break;
+                    case 'ArrowRight':
+                        setSelectedCell({
+                            rowIndex,
+                            colIndex: Math.min(colIndex + 1, noOfCols - 1)
+                        });
+                        break;
+                    default:
+                        break;
+                }
+            }
+        };
+
+        window.addEventListener('keydown', handleKeyDown);
+        return () => {
+            window.removeEventListener('keydown', handleKeyDown);
+        };
+    }, [selectedCell, table.length, noOfCols]);
+
 
     // Debounce saveData to prevent excessive server updates
     useEffect(() => {
@@ -73,7 +114,7 @@ function TaalTable({ noOfCols, bol = [], initialData = [] }) {
 
     const VirtualKeyboard = () => {
         const keyboardElements = [
-            "सा.", "रे.", "ग.", "म.", "प.", "ध.", "नि.", "सा*",
+            "सा.", "रे.", "ग.", "म.", "प.", "ध.", "नि.",
             "सा", "रे", "ग", "म", "प", "ध", "नि", "सा*",
             "रे*", "ग*", "म*", "प*", "ध*", "नि*", "-", "X"
         ];
