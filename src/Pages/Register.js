@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 // import { useNavigation } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import '../Styles/Login.css'
 const Register = () => {
     const [username, setUsername] = useState('');
@@ -17,7 +18,7 @@ const Register = () => {
         });
 
         if (response.ok) {
-            window.location.href="/login"
+            window.location.href = "/login"
         } else {
             alert('Registration failed');
         }
@@ -25,27 +26,29 @@ const Register = () => {
 
     return (
         <div className='auth-form'>
-        <div className="form">
-        <h2>Register</h2>
-            <form onSubmit={handleRegister}>
-                <input
-                required
-                    type="text"
-                    placeholder="Username"
-                    value={username}
-                    onChange={(e) => setUsername(e.target.value)}
-                />
-                <input
-                required
-                    type="password"
-                    placeholder="Password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                />
-                <button type="submit">Register</button>
-            </form>
-        </div>
-            
+            <div className="form">
+                <h2>Register</h2>
+                <form onSubmit={handleRegister}>
+                    <input
+                        required
+                        type="text"
+                        placeholder="Username"
+                        value={username}
+                        onChange={(e) => setUsername(e.target.value)}
+                    />
+                    <input
+                        required
+                        type="password"
+                        placeholder="Password"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                    />
+                    <button type="submit">Register</button>
+                    Already Registered? <Link to={'/login'}>Login</Link>
+
+                </form>
+            </div>
+
         </div>
     );
 };

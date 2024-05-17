@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
+import decodeToken from './utils/jwt';
 import '../Styles/Dashboard.css';
 
 const taals = ['Tintaal', 'Dadra', 'Jhaptaal', 'Kaherwa', 'Rupak'];
@@ -8,32 +9,44 @@ const taals = ['Tintaal', 'Dadra', 'Jhaptaal', 'Kaherwa', 'Rupak'];
 function Dashboard() {
     const [newFileDetails, setNewFileDetails] = useState({ title: '', description: '', taal: '' });
     const [files, setFiles] = useState([]);
+    const [modal, setModal] = useState(false);
+    const [searchTerm, setSearchTerm] = useState('');
 
     useEffect(() => {
-        // Fetch all files on component mount
-        axios.get('http://localhost:5000/files')
-            .then(response => {
-                setFiles(response.data);
+        const token = localStorage.getItem('token');
+        if (token) {
+            const decoded = decodeToken(token);
+            const userId = decoded.id;
+            
+            axios.get('http://localhost:5000/files', {
+                headers: { 'x-access-token': token }
             })
-            .catch(error => {
-                console.error('There was an error fetching the files!', error);
-            });
+                .then(response => {
+                    setFiles(response.data);
+                })
+                .catch(error => {
+                    console.error('There was an error fetching the files!', error);
+                });
+        }
     }, []);
 
     const handleCreateNewFile = (taal) => {
         const timestamp = new Date().toISOString().replace(/[-:.]/g, '');
         const uniqueId = `file_${timestamp}`;
+        setModal(true)
         setNewFileDetails({ ...newFileDetails, taal, title: uniqueId });
     };
 
     const handleSubmitNewFile = () => {
-        if (newFileDetails.taal && newFileDetails.title) {
+        const token = localStorage.getItem('token');
+        if (newFileDetails.taal && newFileDetails.title && token) {
             const existingFile = files.find(file => file.title === newFileDetails.title);
             if (existingFile) {
                 alert('File already exists');
             } else {
-                // Save new file details to the server
-                axios.post('http://localhost:5000/files', newFileDetails)
+                axios.post('http://localhost:5000/files', newFileDetails, {
+                    headers: { 'x-access-token': token }
+                })
                     .then(response => {
                         setFiles([...files, response.data]);
                         window.location.href = `/taal-table/${newFileDetails.taal}/${newFileDetails.title}`;
@@ -45,11 +58,19 @@ function Dashboard() {
         }
     };
 
+    const handleSearch = (event) => {
+        setSearchTerm(event.target.value);
+    };
+
+    const filteredFiles = files.filter(file =>
+        file.title.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+
     return (
         <section className='dashboard-section'>
             <div className="dashboard-container">
                 <div className="new-doc-section">
-                <h3>Create New Composition</h3>
+                    <h3>Create New Composition</h3>
                     <div className="new-doc-container">
                         {taals.map((taal, index) => (
                             <div key={index} >
@@ -63,21 +84,29 @@ function Dashboard() {
                 </div>
                 <div className="my-dashboard">
                     <div className="files-container">
-                    <h3>Recent Files</h3>
-                        {files.map((file) => (
-                            <>
+                        <h3>Recent Files</h3>
+                        <input
+                            type="text"
+                            placeholder="Search files"
+                            value={searchTerm}
+                            onChange={handleSearch}
+                            className="search-input"
+                        />
+                        {filteredFiles.map((file) => (
                             <Link to={`/taal-table/${file.taal}/${file.title}`} key={file.id}>
                                 <div className="file-card">
+                                    {file.thumbnail && (
+                                        <img width={'300px'} height={'300px'} src={file.thumbnail} alt={file.title} className="file-thumbnail" />
+                                    )}
                                     <p>{file.title}</p>
                                     <p>{file.description}</p>
                                 </div>
                             </Link>
-                            </>
                         ))}
                     </div>
                 </div>
             </div>
-            {newFileDetails.taal && (
+            {modal && (
                 <div className="new-file-popup">
                     <h2>Create New File</h2>
                     <input
@@ -92,6 +121,7 @@ function Dashboard() {
                         placeholder="Description"
                     />
                     <button onClick={handleSubmitNewFile}>Create</button>
+                    <button onClick={()=>setModal(false)}>Cancel</button>
                 </div>
             )}
         </section>
