@@ -1,7 +1,11 @@
 import React from 'react'
 import '../Styles/Navbar.css'
 function Navbar() {
-  let login = true;
+  let login = false;
+  const token = localStorage.getItem('token');
+  if(token){
+    login=true;
+  }
   return (
     <section className='navbar-section'>
       <nav className='nav-container'>
@@ -14,8 +18,10 @@ function Navbar() {
           <li>About</li>
           <li>Features</li>
           <li>Contact</li>
-          <li><a href="/dashboard">Dashboard</a></li>
-          <li><a href="/login">Login</a></li>
+          {
+            login?<a href='/dashboard'>Dashboard</a>
+            :<a href='/login'>Login</a>
+          }
 
 
         </ul>

@@ -23,12 +23,11 @@
     border-bottom: 2px solid brown;
 }
 .new-file-popup h2{
-    border-bottom: 2px solid brow;
+    border-bottom: 2px solid brown;
 }
 .new-doc-container{
     width: 100%;
     display: flex;
-    align-items: start;
     justify-content: space-around;
     flex-wrap: wrap;
     gap: 40px;

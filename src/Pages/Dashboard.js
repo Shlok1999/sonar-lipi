@@ -4,7 +4,9 @@ import axios from 'axios';
 import decodeToken from './utils/jwt';
 import '../Styles/Dashboard.css';
 
-const taals = ['Tintaal', 'Dadra', 'Jhaptaal', 'Kaherwa', 'Rupak'];
+const taals = ['Tintaal', 'Dadra', 'Jhaptaal', 'Kaherwa', 'Rupak'
+    ,'Adha','Maddha',
+];
 
 function Dashboard() {
     const [newFileDetails, setNewFileDetails] = useState({ title: '', description: '', taal: '' });

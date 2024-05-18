@@ -1,5 +1,6 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useParams } from 'react-router-dom';
+import { useReactToPrint } from 'react-to-print';
 import '../Styles/TaalTable.css';
 
 function TaalTable({ noOfCols, bol = [], initialData = [] }) {
@@ -7,6 +8,15 @@ function TaalTable({ noOfCols, bol = [], initialData = [] }) {
     const [description, setDescription] = useState("");
     const [table, setTable] = useState(initialData.length > 0 ? initialData : [Array(noOfCols).fill('')]);
     const [selectedCell, setSelectedCell] = useState(null);
+
+
+    const tableComp = useRef();
+
+    const generatePdf = useReactToPrint({
+        content: ()=>tableComp.current,
+        documentTitle: filename,
+        onAfterPrint: ()=> alert("Data Downloaded")
+    })
 
     // Fetch data from server on component mount
     useEffect(() => {
@@ -114,9 +124,9 @@ function TaalTable({ noOfCols, bol = [], initialData = [] }) {
 
     const VirtualKeyboard = () => {
         const keyboardElements = [
-            "सा.", "रे.", "ग.", "म.", "प.", "ध.", "नि.",
-            "सा", "रे", "ग", "म", "प", "ध", "नि", "सा*",
-            "रे*", "ग*", "म*", "प*", "ध*", "नि*", "-", "X"
+            "सा़","रे़॒","रे़","ग़॒", "ग़" , "म़", "म़॑", "प़","ध़॒", "ध़" ,"नि़॒", "नि़",
+            "सा","रे॒", "रे", "ग॒", "ग",  "म", "म॑", "प", "ध॒","ध","नि॒","नि", 
+            "साँ", "रेँ॒","रेँ", "गँ॒", "गँ",  "मँ", "मँ॑", "पँ","धँ॒", "धँ","निँ॒","निँ",  "-", "X"
         ];
 
         return (
@@ -131,10 +141,12 @@ function TaalTable({ noOfCols, bol = [], initialData = [] }) {
     };
 
     return (
+        
         <div className='taal-table-component'>
             <div><h2>{filename}</h2></div>
             <div>{description}</div>
-            <table className='table'>
+            {/* <div ref={tableComp} className='print-table-section'> */}
+            <table ref={tableComp} className='table'>
                 <thead>
                     <tr className='table-head'>
                         {Array.from({ length: noOfCols }, (_, index) => (
@@ -165,8 +177,11 @@ function TaalTable({ noOfCols, bol = [], initialData = [] }) {
                     ))}
                 </tbody>
             </table>
+            {/* </div> */}
             <button className='add-row' onClick={handleAddRow}>Add Row</button>
             <VirtualKeyboard />
+            <button onClick={generatePdf} className='add-row'>Download Table As Pdf</button>
+
         </div>
     );
 }

@@ -3,6 +3,8 @@
     display: flex;
     align-items: center;
     flex-wrap: wrap;
+    width: 100%;
+    max-width: 400px;
 }
 .virtual-keyboard .key{
     min-width: 30px;
