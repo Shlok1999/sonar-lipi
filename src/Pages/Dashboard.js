@@ -5,7 +5,7 @@ import decodeToken from './utils/jwt';
 import '../Styles/Dashboard.css';
 
 const taals = ['Tintaal', 'Dadra', 'Jhaptaal', 'Kaherwa', 'Rupak'
-    ,'Adha','Maddha',
+    ,'Adha',
 ];
 
 function Dashboard() {

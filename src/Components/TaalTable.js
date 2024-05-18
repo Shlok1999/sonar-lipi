@@ -13,9 +13,9 @@ function TaalTable({ noOfCols, bol = [], initialData = [] }) {
     const tableComp = useRef();
 
     const generatePdf = useReactToPrint({
-        content: ()=>tableComp.current,
+        content: () => tableComp.current,
         documentTitle: filename,
-        onAfterPrint: ()=> alert("Data Downloaded")
+        onAfterPrint: () => alert("Data Downloaded")
     })
 
     // Fetch data from server on component mount
@@ -110,6 +110,20 @@ function TaalTable({ noOfCols, bol = [], initialData = [] }) {
         setTable(previousTable => [...previousTable, newRow]);
     };
 
+    const handleSubtractRow = () => {
+        setTable(previousTable => {
+            // Ensure there's at least one row before removing
+            if (previousTable.length > 1) {
+                // Create a copy of the previous table excluding the last row
+                const updatedTable = previousTable.slice(0, -1);
+                return updatedTable;
+            } else {
+                // If there's only one row, return the current table without any changes
+                return previousTable;
+            }
+        });
+    }
+
     const handleKeyboardInput = (value) => {
         if (selectedCell !== null) {
             const { rowIndex, colIndex } = selectedCell;
@@ -124,9 +138,9 @@ function TaalTable({ noOfCols, bol = [], initialData = [] }) {
 
     const VirtualKeyboard = () => {
         const keyboardElements = [
-            "सा़","रे़॒","रे़","ग़॒", "ग़" , "म़", "म़॑", "प़","ध़॒", "ध़" ,"नि़॒", "नि़",
-            "सा","रे॒", "रे", "ग॒", "ग",  "म", "म॑", "प", "ध॒","ध","नि॒","नि", 
-            "साँ", "रेँ॒","रेँ", "गँ॒", "गँ",  "मँ", "मँ॑", "पँ","धँ॒", "धँ","निँ॒","निँ",  "-", "X"
+            "सा़", "रे़॒", "रे़", "ग़॒", "ग़", "म़", "म़॑", "प़", "ध़॒", "ध़", "नि़॒", "नि़",
+            "सा", "रे॒", "रे", "ग॒", "ग", "म", "म॑", "प", "ध॒", "ध", "नि॒", "नि",
+            "साँ", "रेँ॒", "रेँ", "गँ॒", "गँ", "मँ", "मँ॑", "पँ", "धँ॒", "धँ", "निँ॒", "निँ", "-", "X"
         ];
 
         return (
@@ -141,44 +155,48 @@ function TaalTable({ noOfCols, bol = [], initialData = [] }) {
     };
 
     return (
-        
+
         <div className='taal-table-component'>
             <div><h2>{filename}</h2></div>
             <div>{description}</div>
-            {/* <div ref={tableComp} className='print-table-section'> */}
-            <table ref={tableComp} className='table'>
-                <thead>
-                    <tr className='table-head'>
-                        {Array.from({ length: noOfCols }, (_, index) => (
-                            <td key={index}>
-                                {index + 1}
-                            </td>
-                        ))}
-                    </tr>
-                    <tr className='table-head'>
-                        {bol.map((bolElement, index) => (
-                            <td key={index}>{bolElement}</td>
-                        ))}
-                    </tr>
-                </thead>
-                <tbody>
-                    {table.map((row, rowIndex) => (
-                        <tr key={rowIndex}>
-                            {row.map((cell, colIndex) => (
-                                <td
-                                    onClick={() => handleCellClick(rowIndex, colIndex)}
-                                    key={colIndex}
-                                    className={selectedCell?.rowIndex === rowIndex && selectedCell?.colIndex === colIndex ? 'selected-cell' : ''}
-                                >
-                                    {cell}
+            <div className='print-table-section'>
+                <table ref={tableComp} className='table'>
+                    <thead>
+                        <tr className='table-head'>
+                            {Array.from({ length: noOfCols }, (_, index) => (
+                                <td key={index}>
+                                    {index + 1}
                                 </td>
                             ))}
                         </tr>
-                    ))}
-                </tbody>
-            </table>
-            {/* </div> */}
-            <button className='add-row' onClick={handleAddRow}>Add Row</button>
+                        <tr className='table-head'>
+                            {bol.map((bolElement, index) => (
+                                <td key={index}>{bolElement}</td>
+                            ))}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {table.map((row, rowIndex) => (
+                            <tr key={rowIndex}>
+                                {row.map((cell, colIndex) => (
+                                    <td
+                                        onClick={() => handleCellClick(rowIndex, colIndex)}
+                                        key={colIndex}
+                                        className={selectedCell?.rowIndex === rowIndex && selectedCell?.colIndex === colIndex ? 'selected-cell' : ''}
+                                    >
+                                        {cell}
+                                    </td>
+                                ))}
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+            </div>
+            <div className="buttons">
+                <button className='add-row' onClick={handleAddRow}>Add Row</button>
+                <button className='add-row' onClick={handleSubtractRow}>Remove Row</button>
+            </div>
+
             <VirtualKeyboard />
             <button onClick={generatePdf} className='add-row'>Download Table As Pdf</button>
 

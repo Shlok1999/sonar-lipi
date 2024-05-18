@@ -72,7 +72,8 @@
     margin: 4rem;
 }
 .new-file-popup{
-    position: absolute;
+    position: fixed;
+    top: 16%;
     display: flex;
     flex-direction: column;
     align-items: center;

@@ -7,7 +7,11 @@ section{
 .homepage-container{
     display: flex;
     align-items: center;
-    margin-top: 3rem;
+    transform: scale(0.8);
+}
+.homepage-container figure{
+    display: flex;
+    gap: 0px;
 }
 .homepage-container h1{
     font-size: 35px;
@@ -15,8 +19,12 @@ section{
 .hero-section{
     display: flex;
     /* position: absolute; */
-    top: 35%;
+    /* top: 35%; */
 }
 .hero-section h1{
     font-size: 60px;
+}
+
+@media(max-width: 900px){
+
 }
