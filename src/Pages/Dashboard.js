@@ -20,7 +20,7 @@ function Dashboard() {
             const decoded = decodeToken(token);
             const userId = decoded.id;
             
-            axios.get('http://localhost:5000/files', {
+            axios.get('https://sonar-lipi-server.onrender.com/files', {
                 headers: { 'x-access-token': token }
             })
                 .then(response => {
@@ -46,7 +46,7 @@ function Dashboard() {
             if (existingFile) {
                 alert('File already exists');
             } else {
-                axios.post('http://localhost:5000/files', newFileDetails, {
+                axios.post('https://sonar-lipi-server.onrender.com/files', newFileDetails, {
                     headers: { 'x-access-token': token }
                 })
                     .then(response => {

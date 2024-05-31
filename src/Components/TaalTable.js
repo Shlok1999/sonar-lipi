@@ -8,19 +8,21 @@ function TaalTable({ noOfCols, bol = [], initialData = [] }) {
     const [description, setDescription] = useState("");
     const [table, setTable] = useState(initialData.length > 0 ? initialData : [Array(noOfCols).fill('')]);
     const [selectedCell, setSelectedCell] = useState(null);
-
+    const [keySequence, setKeySequence] = useState([]);
 
     const tableComp = useRef();
 
     const generatePdf = useReactToPrint({
         content: () => tableComp.current,
         documentTitle: filename,
-        onAfterPrint: () => alert("Data Downloaded")
-    })
+    });
+    const handleClearAll = () => {
+        setTable([Array(noOfCols).fill('')]);
+    };
 
     // Fetch data from server on component mount
     useEffect(() => {
-        fetch(`http://localhost:5000/files/${filename}`)
+        fetch(`https://sonar-lipi-server.onrender.com/files/${filename}`)
             .then(response => response.json())
             .then(data => {
                 if (data.tableData) {
@@ -35,7 +37,7 @@ function TaalTable({ noOfCols, bol = [], initialData = [] }) {
 
     // Debounced function to save data to the server
     const saveData = useCallback(() => {
-        fetch(`http://localhost:5000/files/${filename}`, {
+        fetch(`https://sonar-lipi-server.onrender.com/files/${filename}`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json'
@@ -47,6 +49,7 @@ function TaalTable({ noOfCols, bol = [], initialData = [] }) {
                 console.error('Error updating the table data!', error);
             });
     }, [description, table, filename]);
+
     useEffect(() => {
         const handleKeyDown = (event) => {
             if (selectedCell !== null) {
@@ -88,7 +91,6 @@ function TaalTable({ noOfCols, bol = [], initialData = [] }) {
         };
     }, [selectedCell, table.length, noOfCols]);
 
-
     // Debounce saveData to prevent excessive server updates
     useEffect(() => {
         const timer = setTimeout(saveData, 500); // Adjust debounce delay as needed
@@ -112,17 +114,63 @@ function TaalTable({ noOfCols, bol = [], initialData = [] }) {
 
     const handleSubtractRow = () => {
         setTable(previousTable => {
-            // Ensure there's at least one row before removing
             if (previousTable.length > 1) {
-                // Create a copy of the previous table excluding the last row
                 const updatedTable = previousTable.slice(0, -1);
                 return updatedTable;
             } else {
-                // If there's only one row, return the current table without any changes
                 return previousTable;
             }
         });
-    }
+    };
+
+    const handleKeySwar = (event) => {
+        const keyMap = {
+            's': 'सा',
+            'r': 'रे॒',
+            'R': 'रे',
+            'g': 'ग॒',
+            'G': 'ग',
+            'm': 'म',
+            'M': 'म॑',
+            'p': 'प',
+            'd': 'ध॒',
+            'D': 'ध',
+            'n': 'नि॒',
+            'N': 'नि',
+            '*': '*',
+            '.': '.',
+            '-': '-'
+        };
+
+        const newKeySequence = [...keySequence, event.key];
+        setKeySequence(newKeySequence);
+
+        if (newKeySequence.join('').includes('mt')) {
+            handleKeyboardInput('म॑');
+            setKeySequence([]);
+        } else {
+            const swar = keyMap[event.key];
+            if (swar) {
+                handleKeyboardInput(swar);
+            }
+        }
+    };
+
+    useEffect(() => {
+        const handleKeyUp = (event) => {
+            if (event.key === 't') {
+                setKeySequence([]); // Reset sequence on key up
+            }
+        };
+
+        document.addEventListener('keydown', handleKeySwar);
+        document.addEventListener('keyup', handleKeyUp);
+
+        return () => {
+            document.removeEventListener('keydown', handleKeySwar);
+            document.removeEventListener('keyup', handleKeyUp);
+        };
+    }, [selectedCell, table, keySequence]);
 
     const handleKeyboardInput = (value) => {
         if (selectedCell !== null) {
@@ -155,7 +203,6 @@ function TaalTable({ noOfCols, bol = [], initialData = [] }) {
     };
 
     return (
-
         <div className='taal-table-component'>
             <div><h2>{filename}</h2></div>
             <div>{description}</div>
@@ -195,11 +242,11 @@ function TaalTable({ noOfCols, bol = [], initialData = [] }) {
             <div className="buttons">
                 <button className='add-row' onClick={handleAddRow}>Add Row</button>
                 <button className='add-row' onClick={handleSubtractRow}>Remove Row</button>
+                <button className='add-row' onClick={handleClearAll}>Clear</button>
             </div>
 
             <VirtualKeyboard />
             <button onClick={generatePdf} className='add-row'>Download Table As Pdf</button>
-
         </div>
     );
 }
