@@ -1,63 +1,93 @@
-.navbar-section{
-    background-color: brown;
-
-}
-.nav-container{
+.nav-bar-section{
+    position: fixed;
+    width: 100%;
     display: flex;
     align-items: center;
-    color: white;
-    width: 100%;
     justify-content: space-between;
-    max-width: 1200px;
-}
-.menu{
-    display: flex;
-    gap: 2rem;
-}
-.menu li{
-    list-style: none;
-    cursor: pointer;
-}
-.menu li a{
+    background-color: rgb(94, 11, 11);
     color: white;
-    text-decoration: none;
+    padding: 1rem;
+    z-index: 300;
 }
-.menu-icon{
+.logo{
+    width: 50%;
+}
+.link-container{
+    display: flex;
+    width: 100%;
+    align-items: center;
+    justify-content: space-around;
+}
+li{
+    list-style: none;
+}
+li a{
+    text-decoration: none;
+    color: white;
+}
+.nav-small-screen-show{
     display: none;
 }
-.menu-small-screen{
+.nav-small-screen{
+    display: none;
+}
+.menu{
     display: none;
 }
 @media(max-width: 900px){
-    .menu-small-screen{
-        background-color: rgba(156, 40, 40, 0.674);
-        display: block;
-        position: absolute;
-        top: 10%;
-        left: 0;
-        width: 30%;
-        height: 100vh;
-    }
-    .menu-small-screen li{
-        list-style: none;
-        text-align: left;
-        margin-top: 4rem;
-    }
-    .menu-small-screen li a{
-        color: white;
-        text-decoration: none;
-    }
-    .menu-icon{
-        display: block;
-        margin-right: 3rem;
-        cursor: pointer;
-    }
     .menu{
+        display: block;
+    }
+    .link-container{
         display: none;
     }
+    .link-container li{
+        width: 100%;
+    }
+    .nav-small-screen{
+        width: 0;
+        animation: slideout 0.2s ease-in;
+    }
+    .nav-small-screen-show{
+        background-color: black;
+        position: fixed;
+        width: 300px;
+        top: 50%;
+        transform: translateY(-50%);
+        height: 100vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: space-around;
+        left: 0;
+        animation: slidein 0.2s ease-in;
+        z-index: 100000;
+    }
+    .nav-small-screen-show  li:hover a{
+        background-color: white;
+        color:  black;
+    }
 }
-@media(max-width: 400px){
-    .menu-small-screen{
-        width: 50%;
+
+@media(max-width: 320px){
+    .nav-small-screen-show{
+        width: 100%;
+    }
+}
+
+@keyframes slidein{
+    from{
+        width: 0;
+    }
+    to{
+        width: 300px;
+    }
+}
+@keyframes slideout{
+    from{
+        width: 300px;
+    }
+    to{
+        width: 0%;
     }
 }

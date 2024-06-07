@@ -9,6 +9,11 @@ import Register from './Pages/Register';
 import Login from './Pages/Login';
 
 function App() {
+  let login = false;
+  const token = localStorage.getItem('token');
+  if (token) {
+    login = true;
+  }
 
   return (
     <div className="App">
@@ -17,8 +22,10 @@ function App() {
           <Routes>
             <Route path='/' element={<Homepage/>}/>
             <Route path='/register' element={<Register/>}/>
-            <Route path='/login' element={<Login/>}/>
-            <Route path='/dashboard' element={<Dashboard/>}/>
+            {
+              login?<Route path='/dashboard' element={<Dashboard/>}/>:
+              <Route path='/login' element={<Login/>}/>
+            }
             <Route path='/taal-table/:taal/:filename' element={<Filepage/>}/>
             {/* <Route path='/test/' element={<Test/>}/> */}
           </Routes>

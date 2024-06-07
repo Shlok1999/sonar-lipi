@@ -1,16 +1,15 @@
 import React, { useState } from 'react';
-// import { useHistory } from 'react-router-dom';
-import '../Styles/Login.css'
+import '../Styles/Login.css';
 import { Link } from 'react-router-dom';
-
 
 const Login = () => {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
-    // const history = useHistory();
+    const [loading, setLoading] = useState(false);
 
     const handleLogin = async (e) => {
         e.preventDefault();
+        setLoading(true); // Show loader
         const response = await fetch('https://sonar-lipi-server.onrender.com/login', {
             method: 'POST',
             headers: {
@@ -20,10 +19,10 @@ const Login = () => {
         });
 
         const data = await response.json();
+        setLoading(false); // Hide loader
         if (data.auth) {
             localStorage.setItem('token', data.token);
-            // history.push('/dashboard');
-            window.location.href="/dashboard"
+            window.location.href = "/dashboard";
         } else {
             alert('Login failed');
         }
@@ -32,27 +31,32 @@ const Login = () => {
     return (
         <div className='auth-form'>
             <div className="form">
-            <h2>Login</h2>
-            <form onSubmit={handleLogin}>
-                <input
-                required
-                    type="text"
-                    placeholder="Username"
-                    value={username}
-                    onChange={(e) => setUsername(e.target.value)}
-                />
-                <input
-                required
-                    type="password"
-                    placeholder="Password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                />
-                <button type="submit">Login</button>
-                Not Registered? <Link to={'/register'}>Register</Link>
-            </form>
+                <h2>Login</h2>
+                <form onSubmit={handleLogin}>
+                    <input
+                        required
+                        type="text"
+                        placeholder="Username"
+                        value={username}
+                        onChange={(e) => setUsername(e.target.value)}
+                    />
+                    <input
+                        required
+                        type="password"
+                        placeholder="Password"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                    />
+                    <button type="submit" disabled={loading}>
+                        {loading ? (
+                            <div className="button-loader"></div>
+                        ) : (
+                            'Login'
+                        )}
+                    </button>
+                    Not Registered? <Link to={'/register'}>Register</Link>
+                </form>
             </div>
-            
         </div>
     );
 };

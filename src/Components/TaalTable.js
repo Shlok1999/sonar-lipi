@@ -36,8 +36,8 @@ function TaalTable({ noOfCols, bol = [], initialData = [] }) {
     }, [filename]);
 
     // Debounced function to save data to the server
-    const saveData = useCallback(() => {
-        fetch(`https://sonar-lipi-server.onrender.com/files/${filename}`, {
+    const saveData = useCallback(async() => {
+        await fetch(`https://sonar-lipi-server.onrender.com/files/${filename}`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json'
@@ -145,7 +145,7 @@ function TaalTable({ noOfCols, bol = [], initialData = [] }) {
         const newKeySequence = [...keySequence, event.key];
         setKeySequence(newKeySequence);
 
-        if (newKeySequence.join('').includes('mt')) {
+        if (newKeySequence.join('').includes('tm')) {
             handleKeyboardInput('म॑');
             setKeySequence([]);
         } else {
@@ -204,8 +204,7 @@ function TaalTable({ noOfCols, bol = [], initialData = [] }) {
 
     return (
         <div className='taal-table-component'>
-            <div><h2>{filename}</h2></div>
-            <div>{description}</div>
+            <div><h2>{filename.toUpperCase()}</h2></div>
             <div className='print-table-section'>
                 <table ref={tableComp} className='table'>
                     <thead>
@@ -229,6 +228,7 @@ function TaalTable({ noOfCols, bol = [], initialData = [] }) {
                                     <td
                                         onClick={() => handleCellClick(rowIndex, colIndex)}
                                         key={colIndex}
+                                        style={selectedCell?.rowIndex === rowIndex && selectedCell?.colIndex === colIndex? {backgroundColor: 'rgba(0, 187, 255, .705)'}: {}}
                                         className={selectedCell?.rowIndex === rowIndex && selectedCell?.colIndex === colIndex ? 'selected-cell' : ''}
                                     >
                                         {cell}

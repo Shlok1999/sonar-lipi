@@ -13,23 +13,29 @@ function Dashboard() {
     const [files, setFiles] = useState([]);
     const [modal, setModal] = useState(false);
     const [searchTerm, setSearchTerm] = useState('');
+    const [loading, setLoading] = useState(true);
 
-    useEffect(() => {
+    const getFiles =async ()=>{
         const token = localStorage.getItem('token');
         if (token) {
             const decoded = decodeToken(token);
             const userId = decoded.id;
             
-            axios.get('https://sonar-lipi-server.onrender.com/files', {
+            await axios.get('https://sonar-lipi-server.onrender.com/files', {
                 headers: { 'x-access-token': token }
             })
                 .then(response => {
                     setFiles(response.data);
+                    setLoading(false)
                 })
                 .catch(error => {
                     console.error('There was an error fetching the files!', error);
                 });
         }
+    }
+
+    useEffect(() => {
+        getFiles()
     }, []);
 
     const handleCreateNewFile = (taal) => {
@@ -39,14 +45,14 @@ function Dashboard() {
         setNewFileDetails({ ...newFileDetails, taal, title: uniqueId });
     };
 
-    const handleSubmitNewFile = () => {
+    const handleSubmitNewFile = async() => {
         const token = localStorage.getItem('token');
         if (newFileDetails.taal && newFileDetails.title && token) {
             const existingFile = files.find(file => file.title === newFileDetails.title);
             if (existingFile) {
                 alert('File already exists');
             } else {
-                axios.post('https://sonar-lipi-server.onrender.com/files', newFileDetails, {
+                await axios.post('https://sonar-lipi-server.onrender.com/files', newFileDetails, {
                     headers: { 'x-access-token': token }
                 })
                     .then(response => {
@@ -94,7 +100,11 @@ function Dashboard() {
                             onChange={handleSearch}
                             className="search-input"
                         />
-                        {filteredFiles.map((file) => (
+                        {
+                            loading?(
+                                <div className="loader"></div> // Loader circle
+                            ):(
+                                filteredFiles.map((file) => (
                             <Link to={`/taal-table/${file.taal}/${file.title}`} key={file.id}>
                                 <div className="file-card">
                                     {file.thumbnail && (
@@ -104,7 +114,10 @@ function Dashboard() {
                                     <p>{file.description}</p>
                                 </div>
                             </Link>
-                        ))}
+                        ))
+                            )
+                        }
+                        
                     </div>
                 </div>
             </div>
@@ -117,11 +130,11 @@ function Dashboard() {
                         onChange={(e) => setNewFileDetails({ ...newFileDetails, title: e.target.value })}
                         placeholder="Title"
                     />
-                    <textarea
+                    {/* <textarea
                         value={newFileDetails.description}
                         onChange={(e) => setNewFileDetails({ ...newFileDetails, description: e.target.value })}
                         placeholder="Description"
-                    />
+                    /> */}
                     <button onClick={handleSubmitNewFile}>Create</button>
                     <button onClick={()=>setModal(false)}>Cancel</button>
                 </div>

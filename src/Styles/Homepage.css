@@ -5,6 +5,7 @@ section{
     justify-content: space-around;
 }
 .homepage-container{
+    margin-top: 5rem;
     display: flex;
     align-items: center;
     transform: scale(0.8);

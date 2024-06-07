@@ -5,7 +5,6 @@
     justify-content: space-around;
     width: 100%;
     overflow: hidden;
-    
 }
 .print-table-section{
     display: flex;
@@ -15,7 +14,6 @@
     overflow-y: auto;
     width: 100%;
 }
-
 .table{
     margin-top: 3rem;
     width: 70%;
@@ -37,19 +35,10 @@ td{
 }
 table{
     border-collapse: collapse;
-
 }
-.active-cell{
-    /* background-color: grey; */
-}
-.selected-cell{
-    background-color: rgba(0, 187, 255, 0.705);
-}
-
 .add-row{
     margin: 3rem;
 }
-
 .keyboard{
     width: 100%;
     display: flex;

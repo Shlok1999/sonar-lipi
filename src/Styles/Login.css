@@ -3,14 +3,13 @@
     flex-direction: column;
     align-items: center;
     justify-content: space-around;
-    margin-top: 3rem;
+    position: relative;
 }
 .form{
-    /* margin-top: 3rem; */
+    margin-top: 5rem;
     display: flex;
     align-items: center;
     justify-content: space-around;
-    border: 1px solid black;
     padding: 3rem;
 }
 form{
@@ -25,8 +24,28 @@ form input,button{
     height: 30px;
 }
 
-button{
-    background-color: black;
-    color: white;
-    cursor: pointer;
+.button-loader {
+    border: 2px solid #f3f3f3;
+    border-top: 2px solid #3498db;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    animation: spin 1s linear infinite;
+    display: inline-block;
+    vertical-align: middle;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+button[disabled] {
+    background-color: #cccccc;
+    cursor: not-allowed;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
 }
