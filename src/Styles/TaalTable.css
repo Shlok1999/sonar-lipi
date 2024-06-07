@@ -7,17 +7,17 @@
     overflow: hidden;
 }
 .print-table-section{
-    height: 400px;
     margin-top: 5rem;
     display: flex;
     align-items: center;
     justify-content: space-around;
-    overflow: auto;
+    overflow-x: auto;
+    overflow-y: auto;
     width: 100%;
 }
 .table{
+    margin-top: 3rem;
     width: 70%;
-    overflow-y: auto;
 }
 thead{
     border: 2px solid black;
@@ -36,8 +36,6 @@ td{
 }
 table{
     border-collapse: collapse;
-    height: 200px;
-    overflow-y: scroll;
 }
 .add-row{
     margin: 1rem;
@@ -51,15 +49,10 @@ table{
     margin-bottom: 3rem;
 }
 .keyboard button{
-    font-size: 15px;
+    font-size: 20px;
     width: 60px;
     padding: 1rem;
     height: 60px;
     background-color: brown;
     color: white;
-}
-@media(max-width: 300px){
-    .print-table-section{
-        height: 50vh ;
-    }
 }
