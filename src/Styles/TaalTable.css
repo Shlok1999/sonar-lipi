@@ -7,17 +7,18 @@
     overflow: hidden;
 }
 .print-table-section{
+    height: 400px;
     margin-top: 5rem;
     display: flex;
     align-items: center;
     justify-content: space-around;
-    overflow-x: auto;
-    overflow-y: auto;
+    overflow: auto;
     width: 100%;
 }
 .table{
     margin-top: 3rem;
     width: 70%;
+    overflow-y: auto;
 }
 thead{
     border: 2px solid black;

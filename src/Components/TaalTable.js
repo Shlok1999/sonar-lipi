@@ -224,6 +224,9 @@ function TaalTable({ noOfCols, bol = [], initialData = [] }) {
             <div style={{marginTop: '10rem'}}><h2>{filename.toUpperCase()}</h2></div>
 
             <div className='print-table-section'>
+                <div className="table-container">
+                    
+                </div>
                 <table ref={tableComp} className='table'>
                     <thead>
                         <tr className='table-head'>
