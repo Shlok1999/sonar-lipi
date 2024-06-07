@@ -16,7 +16,6 @@
     width: 100%;
 }
 .table{
-    margin-top: 3rem;
     width: 70%;
     overflow-y: auto;
 }
@@ -58,4 +57,9 @@ table{
     height: 60px;
     background-color: brown;
     color: white;
+}
+@media(max-width: 300px){
+    .print-table-section{
+        height: 50vh ;
+    }
 }
