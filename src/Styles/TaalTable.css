@@ -7,6 +7,7 @@
     overflow: hidden;
 }
 .print-table-section{
+    margin-top: 5rem;
     display: flex;
     align-items: center;
     justify-content: space-around;
@@ -35,9 +36,12 @@ td{
 }
 table{
     border-collapse: collapse;
+    height: 200px;
+    overflow-y: scroll;
 }
 .add-row{
-    margin: 3rem;
+    margin: 1rem;
+    width: 160px;
 }
 .keyboard{
     width: 100%;
@@ -47,7 +51,7 @@ table{
     margin-bottom: 3rem;
 }
 .keyboard button{
-    font-size: 20px;
+    font-size: 15px;
     width: 60px;
     padding: 1rem;
     height: 60px;

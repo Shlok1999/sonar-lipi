@@ -27,7 +27,6 @@ function App() {
               <Route path='/login' element={<Login/>}/>
             }
             <Route path='/taal-table/:taal/:filename' element={<Filepage/>}/>
-            {/* <Route path='/test/' element={<Test/>}/> */}
           </Routes>
         </Router>
     </div>

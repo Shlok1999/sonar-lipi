@@ -36,7 +36,7 @@ function TaalTable({ noOfCols, bol = [], initialData = [] }) {
     }, [filename]);
 
     // Debounced function to save data to the server
-    const saveData = useCallback(async() => {
+    const saveData = useCallback(async () => {
         await fetch(`https://sonar-lipi-server.onrender.com/files/${filename}`, {
             method: 'PUT',
             headers: {
@@ -178,6 +178,10 @@ function TaalTable({ noOfCols, bol = [], initialData = [] }) {
             const currentValue = table[rowIndex][colIndex];
             if (value === 'X') {
                 handleCellChange(rowIndex, colIndex, currentValue.slice(0, -1));
+            } else if (value === "Add Row") {
+                handleAddRow();
+            } else if (value === "Remove Row") {
+                handleSubtractRow();
             } else {
                 handleCellChange(rowIndex, colIndex, currentValue + value);
             }
@@ -188,8 +192,21 @@ function TaalTable({ noOfCols, bol = [], initialData = [] }) {
         const keyboardElements = [
             "सा़", "रे़॒", "रे़", "ग़॒", "ग़", "म़", "म़॑", "प़", "ध़॒", "ध़", "नि़॒", "नि़",
             "सा", "रे॒", "रे", "ग॒", "ग", "म", "म॑", "प", "ध॒", "ध", "नि॒", "नि",
-            "साँ", "रेँ॒", "रेँ", "गँ॒", "गँ", "मँ", "मँ॑", "पँ", "धँ॒", "धँ", "निँ॒", "निँ", "-", "X"
+            "साँ", "रेँ॒", "रेँ", "गँ॒", "गँ", "मँ", "मँ॑", "पँ", "धँ॒", "धँ", "निँ॒", "निँ", "-", "X","Add Row", "Remove Row"
         ];
+        const handleKeyboardClick = (element) => {
+            switch(element) {
+                case "Add Row":
+                    handleAddRow();
+                    break;
+                case "Remove Row":
+                    handleSubtractRow();
+                    break;
+                default:
+                    handleKeyboardInput(element);
+                    break;
+            }
+        };
 
         return (
             <div className='keyboard'>
@@ -204,7 +221,8 @@ function TaalTable({ noOfCols, bol = [], initialData = [] }) {
 
     return (
         <div className='taal-table-component'>
-            <div><h2>{filename.toUpperCase()}</h2></div>
+            <div style={{marginTop: '10rem'}}><h2>{filename.toUpperCase()}</h2></div>
+
             <div className='print-table-section'>
                 <table ref={tableComp} className='table'>
                     <thead>
@@ -228,7 +246,7 @@ function TaalTable({ noOfCols, bol = [], initialData = [] }) {
                                     <td
                                         onClick={() => handleCellClick(rowIndex, colIndex)}
                                         key={colIndex}
-                                        style={selectedCell?.rowIndex === rowIndex && selectedCell?.colIndex === colIndex? {backgroundColor: 'rgba(0, 187, 255, .705)'}: {}}
+                                        style={selectedCell?.rowIndex === rowIndex && selectedCell?.colIndex === colIndex ? { backgroundColor: 'rgba(0, 187, 255, .705)' } : {}}
                                         className={selectedCell?.rowIndex === rowIndex && selectedCell?.colIndex === colIndex ? 'selected-cell' : ''}
                                     >
                                         {cell}
@@ -238,13 +256,15 @@ function TaalTable({ noOfCols, bol = [], initialData = [] }) {
                         ))}
                     </tbody>
                 </table>
-            </div>
-            <div className="buttons">
-                <button className='add-row' onClick={handleAddRow}>Add Row</button>
-                <button className='add-row' onClick={handleSubtractRow}>Remove Row</button>
-                <button className='add-row' onClick={handleClearAll}>Clear</button>
+                
             </div>
 
+
+            <div className="buttons">
+                    <button className='add-row' onClick={handleAddRow}>Add Row</button>
+                    <button className='add-row' onClick={handleSubtractRow}>Remove Row</button>
+                    <button className='add-row' onClick={handleClearAll}>Clear</button>
+                </div>
             <VirtualKeyboard />
             <button onClick={generatePdf} className='add-row'>Download Table As Pdf</button>
         </div>

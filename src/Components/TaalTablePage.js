@@ -11,7 +11,7 @@ function TaalTablePage() {
     }
 
     return (
-        <div>
+        <div className='taal-table'>
             <TaalComponent
                 filename={filename}
                 title={title}
