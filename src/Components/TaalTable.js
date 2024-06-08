@@ -1,7 +1,10 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useParams } from 'react-router-dom';
 import { useReactToPrint } from 'react-to-print';
+import generatePDF, { usePDF } from 'react-to-pdf';
 import '../Styles/TaalTable.css';
+
+
 
 function TaalTable({ noOfCols, bol = [], initialData = [] }) {
     const { filename } = useParams();
@@ -9,13 +12,12 @@ function TaalTable({ noOfCols, bol = [], initialData = [] }) {
     const [table, setTable] = useState(initialData.length > 0 ? initialData : [Array(noOfCols).fill('')]);
     const [selectedCell, setSelectedCell] = useState(null);
     const [keySequence, setKeySequence] = useState([]);
+    
+    const {toPDF, targetRef} = usePDF({filename: filename});
 
-    const tableComp = useRef();
 
-    const generatePdf = useReactToPrint({
-        content: () => tableComp.current,
-        documentTitle: filename,
-    });
+    
+     
     const handleClearAll = () => {
         setTable([Array(noOfCols).fill('')]);
     };
@@ -40,7 +42,8 @@ function TaalTable({ noOfCols, bol = [], initialData = [] }) {
         await fetch(`https://sonar-lipi-server.onrender.com/files/${filename}`, {
             method: 'PUT',
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                
             },
             body: JSON.stringify({ description, tableData: table })
         })
@@ -49,6 +52,7 @@ function TaalTable({ noOfCols, bol = [], initialData = [] }) {
                 console.error('Error updating the table data!', error);
             });
     }, [description, table, filename]);
+    
 
     useEffect(() => {
         const handleKeyDown = (event) => {
@@ -144,6 +148,7 @@ function TaalTable({ noOfCols, bol = [], initialData = [] }) {
 
         const newKeySequence = [...keySequence, event.key];
         setKeySequence(newKeySequence);
+        
 
         if (newKeySequence.join('').includes('tm')) {
             handleKeyboardInput('म॑');
@@ -190,23 +195,8 @@ function TaalTable({ noOfCols, bol = [], initialData = [] }) {
 
     const VirtualKeyboard = () => {
         const keyboardElements = [
-            "सा़", "रे़॒", "रे़", "ग़॒", "ग़", "म़", "म़॑", "प़", "ध़॒", "ध़", "नि़॒", "नि़",
-            "सा", "रे॒", "रे", "ग॒", "ग", "म", "म॑", "प", "ध॒", "ध", "नि॒", "नि",
-            "साँ", "रेँ॒", "रेँ", "गँ॒", "गँ", "मँ", "मँ॑", "पँ", "धँ॒", "धँ", "निँ॒", "निँ", "-", "X"
+            "सा", "रे॒", "रे", "ग॒", "ग", "म", "म॑", "प", "ध॒", "ध", "नि॒", "नि","*","."
         ];
-        const handleKeyboardClick = (element) => {
-            switch(element) {
-                case "Add Row":
-                    handleAddRow();
-                    break;
-                case "Remove Row":
-                    handleSubtractRow();
-                    break;
-                default:
-                    handleKeyboardInput(element);
-                    break;
-            }
-        };
 
         return (
             <div className='keyboard'>
@@ -221,13 +211,13 @@ function TaalTable({ noOfCols, bol = [], initialData = [] }) {
 
     return (
         <div className='taal-table-component'>
-            <div style={{marginTop: '10rem'}}><h2>{filename.toUpperCase()}</h2></div>
+            <div style={{ marginTop: '10rem' }}><h2>{filename.toUpperCase()}</h2></div>
 
             <div className='print-table-section'>
                 <div className="table-container">
-                    
+
                 </div>
-                <table ref={tableComp} className='table'>
+                <table ref={targetRef} className='table'>
                     <thead>
                         <tr className='table-head'>
                             {Array.from({ length: noOfCols }, (_, index) => (
@@ -259,17 +249,17 @@ function TaalTable({ noOfCols, bol = [], initialData = [] }) {
                         ))}
                     </tbody>
                 </table>
-                
             </div>
 
-
-            <div className="buttons">
+            <div className="buttons-container">
+                <div className="buttons">
                     <button className='add-row' onClick={handleAddRow}>Add Row</button>
                     <button className='add-row' onClick={handleSubtractRow}>Remove Row</button>
                     <button className='add-row' onClick={handleClearAll}>Clear</button>
                 </div>
-            <VirtualKeyboard />
-            <button onClick={generatePdf} className='add-row'>Download Table As Pdf</button>
+                <VirtualKeyboard />
+                <button onClick={()=>toPDF()} className='add-row'>Download Table As Pdf</button>
+            </div>
         </div>
     );
 }
