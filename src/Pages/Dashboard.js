@@ -1,67 +1,48 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import axios from 'axios';
-import decodeToken from './utils/jwt';
 import '../Styles/Dashboard.css';
 
-const taals = ['Tintaal', 'Dadra', 'Jhaptaal', 'Kaherwa', 'Rupak'
-    ,'Adha',
-];
+const taals = ['Tintaal', 'Dadra', 'Jhaptaal', 'Kaherwa', 'Rupak', 'Adha'];
 
 function Dashboard() {
     const [newFileDetails, setNewFileDetails] = useState({ title: '', description: '', taal: '' });
     const [files, setFiles] = useState([]);
     const [modal, setModal] = useState(false);
     const [searchTerm, setSearchTerm] = useState('');
-    const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState(false); // No loading needed for local state
 
-    const getFiles =async ()=>{
-        const token = localStorage.getItem('token');
-        if (token) {
-            const decoded = decodeToken(token);
-            const userId = decoded.id;
-            
-            await axios.get('https://sonar-lipi-server.onrender.com/files', {
-                headers: { 'x-access-token': token }
-            })
-                .then(response => {
-                    setFiles(response.data);
-                    setLoading(false)
-                })
-                .catch(error => {
-                    console.error('There was an error fetching the files!', error);
-                });
-        }
-    }
-
+    // Load files from localStorage on component mount
     useEffect(() => {
-        getFiles()
+        const savedFiles = localStorage.getItem('compositionFiles');
+        if (savedFiles) {
+            setFiles(JSON.parse(savedFiles));
+        }
     }, []);
 
     const handleCreateNewFile = (taal) => {
         const timestamp = new Date().toISOString().replace(/[-:.]/g, '');
         const uniqueId = `file_${timestamp}`;
-        setModal(true)
+        setModal(true);
         setNewFileDetails({ ...newFileDetails, taal, title: uniqueId });
     };
 
-    const handleSubmitNewFile = async() => {
-        const token = localStorage.getItem('token');
-        if (newFileDetails.taal && newFileDetails.title && token) {
+    const handleSubmitNewFile = () => {
+        if (newFileDetails.taal && newFileDetails.title) {
             const existingFile = files.find(file => file.title === newFileDetails.title);
             if (existingFile) {
                 alert('File already exists');
             } else {
-                await axios.post('https://sonar-lipi-server.onrender.com/files', newFileDetails, {
-                    headers: { 'x-access-token': token }
-                })
-                    .then(response => {
-                        setFiles([...files, response.data]);
-                        window.location.href = `/taal-table/${newFileDetails.taal}/${newFileDetails.title}`;
-                    })
-                    .catch(error => {
-                        console.error('There was an error creating the file!', error);
-                    });
+                const newFile = {
+                    ...newFileDetails,
+                    id: Date.now().toString(), // Simple unique ID
+                    createdAt: new Date().toISOString()
+                };
+                
+                const updatedFiles = [...files, newFile];
+                setFiles(updatedFiles);
+                localStorage.setItem('compositionFiles', JSON.stringify(updatedFiles));
+                
+                window.location.href = `/taal-table/${newFileDetails.taal}/${newFileDetails.title}`;
             }
         }
     };
@@ -81,9 +62,11 @@ function Dashboard() {
                     <h3>Create New Composition</h3>
                     <div className="new-doc-container">
                         {taals.map((taal, index) => (
-                            <div key={index} >
+                            <div key={index}>
                                 <div className="card new-file">
-                                    <div className="new-file-icon" onClick={() => handleCreateNewFile(taal)}><h2>+</h2></div>
+                                    <div className="new-file-icon" onClick={() => handleCreateNewFile(taal)}>
+                                        <h2>+</h2>
+                                    </div>
                                 </div>
                                 <p>{taal}</p>
                             </div>
@@ -100,11 +83,7 @@ function Dashboard() {
                             onChange={handleSearch}
                             className="search-input"
                         />
-                        {
-                            loading?(
-                                <div className="loader"></div> // Loader circle
-                            ):(
-                                filteredFiles.map((file) => (
+                        {filteredFiles.map((file) => (
                             <Link to={`/taal-table/${file.taal}/${file.title}`} key={file.id}>
                                 <div className="file-card">
                                     {file.thumbnail && (
@@ -114,10 +93,7 @@ function Dashboard() {
                                     <p>{file.description}</p>
                                 </div>
                             </Link>
-                        ))
-                            )
-                        }
-                        
+                        ))}
                     </div>
                 </div>
             </div>
@@ -130,13 +106,8 @@ function Dashboard() {
                         onChange={(e) => setNewFileDetails({ ...newFileDetails, title: e.target.value })}
                         placeholder="Title"
                     />
-                    {/* <textarea
-                        value={newFileDetails.description}
-                        onChange={(e) => setNewFileDetails({ ...newFileDetails, description: e.target.value })}
-                        placeholder="Description"
-                    /> */}
                     <button onClick={handleSubmitNewFile}>Create</button>
-                    <button onClick={()=>setModal(false)}>Cancel</button>
+                    <button onClick={() => setModal(false)}>Cancel</button>
                 </div>
             )}
         </section>
